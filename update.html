@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amount Converter</title>
+    <style>
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Convert English Amount to Nepali Amount and Words</h2>
+
+    <label for="englishAmount">English Amount:</label><br>
+    <input type="text" id="englishAmount" placeholder="Enter amount in English" oninput="convertAmount()"><br>
+
+    <label for="nepaliAmount">Nepali Amount:</label><br>
+    <input type="text" id="nepaliAmount" disabled><br>
+
+    <label for="nepaliWords">Amount in Nepali Words:</label><br>
+    <input type="text" id="nepaliWords" disabled><br>
+
+    <script>
+        // Function to convert number to Nepali digits with commas
+        function convertToNepaliDigits(number) {
+            const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ','];
+            const nepaliDigits = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९', '.', ','];
+            let nepaliNumber = '';
+
+            for (let char of number) {
+                if (englishDigits.includes(char)) {
+                    nepaliNumber += nepaliDigits[englishDigits.indexOf(char)];
+                } else {
+                    nepaliNumber += char;
+                }
+            }
+
+            return nepaliNumber;
+        }
+
+        // Function to convert number to Nepali words (up to trillion)
+        function convertToNepaliWords(number) {
+            const nepaliNumbers = [
+                '', 'एक', 'दुई', 'तीन', 'चार', 'पाँच', 'छ', 'सात', 'आठ', 'नौ', 'दस',
+                'एघार', 'बाह्र', 'तेह्र', 'चौध', 'पन्ध्र', 'सोह्र', 'सत्र', 'अठार', 'उन्नाइस', 'बीस',
+                'एक्काइस', 'बाइस', 'तेइस', 'चौविस', 'पच्चिस', 'छब्बिस', 'सत्ताइस', 'अठ्ठाइस', 'उनन्तिस', 'तीस',
+                'एकतीस', 'बत्तीस', 'तेत्तीस', 'चौतीस', 'पैँतीस', 'छत्तीस', 'सैँतीस', 'अठतीस', 'उनन्चालीस', 'चालीस',
+                'एकचालीस', 'बयालिस', 'त्रिचालीस', 'चवालीस', 'पैँचालीस', 'छयालिस', 'सच्चालीस', 'अठचालीस', 'उनन्चास', 'पचास',
+                'एकाउन्न', 'बाउन्न', 'त्रिपन्न', 'चउन्न', 'पचपन्न', 'छपन्न', 'सन्ताउन्न', 'अन्ठाउन्न', 'उनन्साठी', 'साठी',
+                'एकसठ्ठी', 'बासठ्ठी', 'त्रिसठ्ठी', 'चौंसठ्ठी', 'पैंसठ्ठी', 'छैसठ्ठी', 'सत्सठ्ठी', 'अठसठ्ठी', 'उनन्सत्तरी', 'सत्तरी',
+                'एकहत्तर', 'बहत्तर', 'त्रिहत्तर', 'चौहत्तर', 'पचहत्तर', 'छयहत्तर', 'सतहत्तर', 'अठहत्तर', 'उनन्सी', 'असी',
+                'एकासी', 'बयासी', 'त्रियासी', 'चौरासी', 'पचासी', 'छयासी', 'सतासी', 'अठासी', 'उनान्नब्बे', 'नब्बे', 
+                'एकान्नब्बे', 'बयान्नब्बे', 'त्रियान्नब्बे', 'चौरान्नब्बे', 'पन्चान्नब्बे', 'छयान्नब्बे', 'सन्तान्नब्बे', 'अन्ठान्नब्बे', 'उनान्सय', 'सय'
+            ];
+
+            const scales = [
+                '', 'हजार', 'लाख', 'करोड', 'अर्ब', 'खर्ब', 'नील', 'पद्म', 'शंख', 'महाशंख', 'पद्म'
+            ];
+
+            if (number === '0') {
+                return 'शून्य';
+            }
+
+            let words = '';
+            let remainder = parseInt(number.replace(/,/g, '')); // Remove commas for processing
+            let scaleIndex = 0;
+
+            while (remainder > 0) {
+                const currentPart = remainder % 1000;
+
+                if (currentPart > 0) {
+                    const scale = scales[scaleIndex];
+                    words = convertThreeDigitNumberToNepaliWords(currentPart) + ' ' + scale + ' ' + words;
+                }
+
+                remainder = Math.floor(remainder / 1000);
+                scaleIndex++;
+            }
+
+            return words.trim();
+        }
+
+        // Function to convert three-digit numbers to Nepali words
+        function convertThreeDigitNumberToNepaliWords(number) {
+            const nepaliNumbers = [
+                '', 'एक', 'दुई', 'तीन', 'चार', 'पाँच', 'छ', 'सात', 'आठ', 'नौ', 'दस',
+                'एघार', 'बाह्र', 'तेह्र', 'चौध', 'पन्ध्र', 'सोह्र', 'सत्र', 'अठार', 'उन्नाइस', 'बीस',
+                'एक्काइस', 'बाइस', 'तेइस', 'चौविस', 'पच्चिस', 'छब्बिस', 'सत्ताइस', 'अठ्ठाइस', 'उनन्तिस', 'तीस',
+                'एकतीस', 'बत्तीस', 'तेत्तीस', 'चौतीस', 'पैँतीस', 'छत्तीस', 'सैँतीस', 'अठतीस', 'उनन्चालीस', 'चालीस',
+                'एकचालीस', 'बयालिस', 'त्रिचालीस', 'चवालीस', 'पैँचालीस', 'छयालिस', 'सच्चालीस', 'अठचालीस', 'उनन्चास', 'पचास',
+                'एकाउन्न', 'बाउन्न', 'त्रिपन्न', 'चउन्न', 'पचपन्न', 'छपन्न', 'सन्ताउन्न', 'अन्ठाउन्न', 'उनन्साठी', 'साठी',
+                'एकसठ्ठी', 'बासठ्ठी', 'त्रिसठ्ठी', 'चौंसठ्ठी', 'पैंसठ्ठी', 'छैसठ्ठी', 'सत्सठ्ठी', 'अठसठ्ठी', 'उनन्सत्तरी', 'सत्तरी',
+                'एकहत्तर', 'बहत्तर', 'त्रिहत्तर', 'चौहत्तर', 'पचहत्तर', 'छयहत्तर', 'सतहत्तर', 'अठहत्तर', 'उनन्सी', 'असी',
+                'एकासी', 'बयासी', 'त्रियासी', 'चौरासी', 'पचासी', 'छयासी', 'सतासी', 'अठासी', 'उनान्नब्बे', 'नब्बे', 
+                'एकान्नब्बे', 'बयान्नब्बे', 'त्रियान्नब्बे', 'चौरान्नब्बे', 'पन्चान्नब्बे', 'छयान्नब्बे', 'सन्तान्नब्बे', 'अन्ठान्नब्बे', 'उनान्सय', 'सय'
+            ];
+
+            if (number === 0) {
+                return '';
+            }
+
+            let words = '';
+            let remainder = number;
+
+            if (remainder >= 100) {
+                words += nepaliNumbers[Math.floor(remainder / 100)] + ' सय ';
+                remainder = remainder % 100;
+            }
+
+            if (remainder > 0) {
+                words += nepaliNumbers[remainder];
+            }
+
+            return words.trim();
+        }
+
+        function convertAmount() {
+            const englishAmount = document.getElementById('englishAmount').value;
+            const [integerPart, decimalPart] = englishAmount.split('.');
+            
+            const nepaliAmount = convertToNepaliDigits(integerPart);
+            let nepaliWords = convertToNepaliWords(integerPart);
+
+            if (decimalPart) {
+                nepaliWords += ' दशमलव ';
+                for (let digit of decimalPart) {
+                    nepaliWords += convertToNepaliWords(digit) + ' ';
+                }
+            }
+
+            document.getElementById('nepaliAmount').value = nepaliAmount;
+            document.getElementById('nepaliWords').value = nepaliWords.trim();
+        }
+    </script>
+
+</body>
+</html>
